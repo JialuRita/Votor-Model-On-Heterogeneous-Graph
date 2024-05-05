@@ -15,33 +15,30 @@ from tqdm import tqdm
 
 random.seed(3407)
 
-
+# 生成2d格子网络
 def create_network(width, height, p):
     G = nx.grid_2d_graph(width, height,
-                         periodic=False)  # 如果想要边界是环形的，设置periodic=True
+                         periodic=False)  # 如果设置periodic=True，则为环形
     nodes = list(G.nodes())
     for node in nodes:
         for target in nodes:
             if target != node and (
                     node, target) not in G.edges() and random.random() < p:
-                G.add_edge(node, target)
-
+                G.add_edge(node, target)  #随机增加边
     return G
 
-
+# 可视化节点状态变化
 def visual(G, path):
     plt.figure()
-    # 为了更好地可视化，设置节点的位置
+    # 设置节点的位置
     pos = {(x, y): (y, -x) for x, y in G.nodes()}
     # 根据节点的 status 属性设置颜色
     node_colors = ['pink' if G.nodes[node]['status'] == 1 else 'royalblue' for node in
                    G.nodes()]
-    # 绘制图，根据 status 显示节点颜色
-    # nx.draw(G, pos, with_labels=False, node_color=node_colors, edge_color='black', node_size=5, font_size=9)
-    # 绘制节点
+    # 绘制图像
     nx.draw_networkx_nodes(G, pos, node_color=node_colors, node_size=5)
     plt.savefig(path)
-    plt.close()  # Close the figure to free up memory
+    plt.close()
     # plt.show()
 
 
@@ -64,7 +61,6 @@ def process(G):
         G.nodes[node]['status'] = G.nodes[selected_neighbor]['status']
     else:
         print("Node:", node, "has no neighbors.")
-
     return G
 
 
@@ -73,7 +69,6 @@ def cal_na(G):
     for edge in G.edges:
         if G.nodes[edge[0]]['status'] != G.nodes[edge[1]]['status']:
             num += 1
-
     return num / float(G.size())
 
 
@@ -107,7 +102,6 @@ def generate_video(img_folder, output_path):
         [f for f in os.listdir(img_folder) if f.endswith('.jpg')],
         key=lambda x: int(os.path.splitext(x)[0])
     )
-
     # 检查是否有图片文件
     if not file_names:
         print("No '.jpg' images found in the folder.")
@@ -122,16 +116,12 @@ def generate_video(img_folder, output_path):
                 writer.append_data(img)  # 添加到视频
             else:
                 print(f"File not found: {file_path}")
-
     print("Video created successfully at", output_path)
 
 
 t_lis = [round(10 ** i) for i in np.linspace(0, 7, 50)]
 t_lis = list(set(t_lis))
 print(t_lis)
-
-
-
 
 def part1(info: str):
     temp_list = copy.deepcopy(t_lis)
@@ -150,7 +140,6 @@ def part1(info: str):
             print(f'{t} {na}')
             if na == 0:
                 break
-
     draw([dict], "./part1.jpg", 'N = 10000 p = 0.0001')
 
 
